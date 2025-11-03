@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATM Machine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .atm-machine {
+            background: linear-gradient(145deg, #2d3436, #1e272e);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow:
+                    0 30px 60px rgba(0, 0, 0, 0.5),
+                    inset 0 2px 10px rgba(255, 255, 255, 0.1);
+            max-width: 500px;
+            width: 100%;
+            border: 3px solid #34495e;
+        }
+
+        .atm-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #34495e;
+        }
+
+        .bank-logo {
+            color: #27ae60;
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(39, 174, 96, 0.5);
+        }
+
+        .atm-title {
+            color: #95a5a6;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .screen-container {
+            background: #0a3d2e;
+            border: 4px solid #1e3a2f;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow:
+                    inset 0 0 20px rgba(0, 0, 0, 0.8),
+                    0 0 15px rgba(39, 174, 96, 0.2);
+            min-height: 280px;
+        }
+
+        .screen-text {
+            color: #00ff41;
+            font-size: 16px;
+            line-height: 1.8;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+        }
+
+        .balance-display {
+            background: rgba(39, 174, 96, 0.1);
+            border: 2px solid #27ae60;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .balance-label {
+            color: #27ae60;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            color: #00ff41;
+            font-size: 32px;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.5);
+        }
+
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            color: #27ae60;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            background: #1a3329;
+            border: 2px solid #27ae60;
+            border-radius: 5px;
+            color: #00ff41;
+            font-size: 18px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00ff41;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+        }
+
+        input::placeholder {
+            color: #2d6d4e;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .message.success {
+            background: rgba(39, 174, 96, 0.2);
+            color: #00ff41;
+            border: 2px solid #27ae60;
+        }
+
+        .message.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: #ff6b6b;
+            border: 2px solid #e74c3c;
+        }
+
+        .message.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .key-button {
+            background: linear-gradient(145deg, #34495e, #2c3e50);
+            border: 2px solid #1a252f;
+            padding: 18px;
+            border-radius: 10px;
+            color: #ecf0f1;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            box-shadow:
+                    0 5px 15px rgba(0, 0, 0, 0.3),
+                    inset 0 1px 2px rgba(255, 255, 255, 0.1);
+        }
+
+        .key-button:hover {
+            background: linear-gradient(145deg, #3d566e, #34495e);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .key-button:active {
+            transform: translateY(0);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .key-button.deposit {
+            background: linear-gradient(145deg, #27ae60, #229954);
+            border-color: #1e8449;
+        }
+
+        .key-button.deposit:hover {
+            background: linear-gradient(145deg, #2ecc71, #27ae60);
+        }
+
+        .key-button.withdraw {
+            background: linear-gradient(145deg, #e67e22, #d35400);
+            border-color: #ba4a00;
+        }
+
+        .key-button.withdraw:hover {
+            background: linear-gradient(145deg, #f39c12, #e67e22);
+        }
+
+        .key-button.balance {
+            background: linear-gradient(145deg, #3498db, #2980b9);
+            border-color: #1f618d;
+            grid-column: 1 / -1;
+        }
+
+        .key-button.balance:hover {
+            background: linear-gradient(145deg, #5dade2, #3498db);
+        }
+
+        .key-button.initialize {
+            background: linear-gradient(145deg, #27ae60, #229954);
+            border-color: #1e8449;
+            grid-column: 1 / -1;
+            font-size: 18px;
+            padding: 22px;
+        }
+
+        .key-button.initialize:hover {
+            background: linear-gradient(145deg, #2ecc71, #27ae60);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .card-slot {
+            background: #000;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.8);
+        }
+
+        .indicator-lights {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #2c3e50;
+            box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .indicator.active {
+            background: #27ae60;
+            box-shadow:
+                    0 0 10px rgba(39, 174, 96, 0.8),
+                    inset 0 1px 2px rgba(255, 255, 255, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .atm-machine {
+                padding: 25px;
+            }
+
+            .bank-logo {
+                font-size: 22px;
+            }
+
+            .balance-amount {
+                font-size: 24px;
+            }
+
+            .keypad {
+                gap: 10px;
+            }
+
+            .key-button {
+                padding: 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="atm-machine">
+    <div class="card-slot"></div>
+
+    <div class="indicator-lights">
+        <div class="indicator" id="indicator1"></div>
+        <div class="indicator" id="indicator2"></div>
+        <div class="indicator" id="indicator3"></div>
+    </div>
+
+    <div class="atm-header">
+        <div class="bank-logo">💳 MILAN BANK</div>
+        <div class="atm-title">The Bank Made With Love</div>
+    </div>
+
+    <div class="screen-container">
+        <div class="screen-text">
+            <div id="message" class="message"></div>
+
+            <!-- Initialization Screen -->
+            <div id="initSection">
+                <div class="screen-text" style="text-align: center; margin-bottom: 20px;">
+                    WELCOME TO MILAN BANK<br>
+                    ━━━━━━━━━━━━━━━━━━━━━━━━━━<br><br>
+                    PLEASE ENTER INITIAL DEPOSIT<br>
+                    (MINIMUM: ₹100.00)
+                </div>
+                <div class="input-section">
+                    <input type="number" id="initialAmount" placeholder="0.00" min="100" step="0.01">
+                </div>
+                <div class="keypad">
+                    <button class="key-button initialize" onclick="initializeAccount()">
+                        ► INITIALIZE ACCOUNT
+                    </button>
+                </div>
+            </div>
+
+            <!-- Main ATM Screen -->
+            <div id="mainSection" class="hidden">
+                <div class="balance-display">
+                    <div class="balance-label">CURRENT BALANCE</div>
+                    <div class="balance-amount" id="balanceDisplay">₹0.00</div>
+                </div>
+
+                <div class="input-section">
+                    <label class="input-label">► Enter Amount</label>
+                    <input type="number" id="amount" placeholder="0.00" min="0" step="0.01">
+                </div>
+
+                <div class="keypad">
+                    <button class="key-button deposit" onclick="deposit()">
+                        💵 DEPOSIT
+                    </button>
+                    <button class="key-button withdraw" onclick="withdraw()">
+                        💸 WITHDRAW
+                    </button>
+                    <button class="key-button balance" onclick="checkBalance()">
+                        📊 CHECK BALANCE
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = window.location.hostname === 'localhost'
+        ? 'http://localhost:8080/api/atm'
+        : '/api/atm';
+
+    // Activate indicators on load
+    document.getElementById('indicator1').classList.add('active');
+
+    async function initializeAccount() {
+        const amount = parseFloat(document.getElementById('initialAmount').value);
+
+        if (isNaN(amount) || amount < 100) {
+            showMessage('MINIMUM BALANCE REQUIRED: ₹100.00', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/initialize`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showMessage('ACCOUNT INITIALIZED SUCCESSFULLY', 'success');
+                setTimeout(() => {
+                    document.getElementById('initSection').classList.add('hidden');
+                    document.getElementById('mainSection').classList.remove('hidden');
+                    updateBalance(data.balance);
+                    activateAllIndicators();
+                }, 1500);
+            } else {
+                showMessage(data.message.toUpperCase(), 'error');
+            }
+        } catch (error) {
+            showMessage('CONNECTION ERROR - PLEASE TRY AGAIN', 'error');
+        }
+    }
+
+    async function deposit() {
+        const amount = parseFloat(document.getElementById('amount').value);
+
+        if (isNaN(amount) || amount <= 0) {
+            showMessage('INVALID AMOUNT ENTERED', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/deposit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount })
+            });
+
+            const data = await response.json();
+            showMessage(data.message.toUpperCase(), data.success ? 'success' : 'error');
+            updateBalance(data.balance);
+            document.getElementById('amount').value = '';
+        } catch (error) {
+            showMessage('TRANSACTION FAILED', 'error');
+        }
+    }
+
+    async function withdraw() {
+        const amount = parseFloat(document.getElementById('amount').value);
+
+        if (isNaN(amount) || amount <= 0) {
+            showMessage('INVALID AMOUNT ENTERED', 'error');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/withdraw`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount })
+            });
+
+            const data = await response.json();
+            showMessage(data.message.toUpperCase(), data.success ? 'success' : 'error');
+            updateBalance(data.balance);
+            document.getElementById('amount').value = '';
+        } catch (error) {
+            showMessage('TRANSACTION FAILED', 'error');
+        }
+    }
+
+    async function checkBalance() {
+        try {
+            const response = await fetch(`${API_URL}/balance`);
+            const data = await response.json();
+            showMessage(`AVAILABLE BALANCE: ₹${data.balance.toFixed(2)}`, 'success');
+        } catch (error) {
+            showMessage('UNABLE TO RETRIEVE BALANCE', 'error');
+        }
+    }
+
+    function updateBalance(balance) {
+        document.getElementById('balanceDisplay').textContent = `₹${balance.toFixed(2)}`;
+    }
+
+    function showMessage(text, type) {
+        const messageEl = document.getElementById('message');
+        messageEl.textContent = text;
+        messageEl.className = `message ${type} show`;
+        setTimeout(() => {
+            messageEl.classList.remove('show');
+        }, 4000);
+    }
+
+    function activateAllIndicators() {
+        document.getElementById('indicator2').classList.add('active');
+        document.getElementById('indicator3').classList.add('active');
+    }
+
+    // Check if account is already initialized on page load
+    window.addEventListener('load', async () => {
+        try {
+            const response = await fetch(`${API_URL}/status`);
+            const data = await response.json();
+
+            if (data.message === 'initialized') {
+                document.getElementById('initSection').classList.add('hidden');
+                document.getElementById('mainSection').classList.remove('hidden');
+                updateBalance(data.balance);
+                activateAllIndicators();
+            }
+        } catch (error) {
+            console.log('Server starting...');
+        }
+    });
+</script>
+</body>
+</html>
