@@ -96,7 +96,7 @@ Open your browser and navigate to: http://localhost:8080
 
 ## Docker Deployment (Recommended)
 
-1) **Make sure Docker Desktop is running.**
+1) **Make sure that Docker Desktop is running.**
 
 2) **Build the Docker image:**
 ```bash
